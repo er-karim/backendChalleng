@@ -4,6 +4,10 @@ class Rental
 
   attr_accessor :id, :car, :start_date, :end_date, :distance
 
+  FIRST_DISCOUNT = 0.1
+  SECOND_DISCOUNT = 0.3
+  THIRD_DISCOUNT = 0.5
+
   def initialize(params, cars)
     @id = params['id']
     @car = cars[params['car_id']]
@@ -13,8 +17,26 @@ class Rental
   end
 
   def price
-    price = ((@end_date - @start_date) + 1) * @car.price_per_day + (@distance * @car.price_per_km)
+    rental_days = 1 + (@end_date - @start_date).to_i
+
+    price_per_day = @car.price_per_day - (@car.price_per_day * get_discount(rental_days))
+
+    price = rental_days * price_per_day + (@distance * @car.price_per_km)
     {id: @id, price: price.to_i}
   end
 
+  private
+
+  def get_discount(rental_days)
+    case rental_days
+      when 0..1
+        0
+      when 2..4
+        FIRST_DISCOUNT
+      when 5..10
+        SECOND_DISCOUNT
+      else
+        THIRD_DISCOUNT
+    end
+  end
 end
