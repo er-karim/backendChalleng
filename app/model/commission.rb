@@ -13,8 +13,28 @@ class Commission
     @drivy_fee = global_commission - @insurance_fee - @assistance_fee
   end
 
+  def total
+    @insurance_fee.to_i  + @assistance_fee.to_i  + @drivy_fee.to_i
+  end
+
   def data
-    {insurance_fee: @insurance_fee.to_i, assistance_fee: @assistance_fee.to_i, drivy_fee: @drivy_fee.to_i}
+    [
+        {
+            "who": "insurance",
+            "type": "credit",
+            amount: @insurance_fee.to_i,
+        },
+        {
+            "who": "assistance",
+            "type": "credit",
+            amount: @assistance_fee.to_i,
+        },
+        {
+            "who": "drivy",
+            "type": "credit",
+            amount: @drivy_fee.to_i,
+        }
+    ]
   end
 
 
