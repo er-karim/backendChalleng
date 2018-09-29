@@ -2,7 +2,7 @@ require 'date'
 
 class Rental
 
-  attr_accessor :id, :car, :start_date, :end_date, :distance
+  attr_accessor :id, :car, :start_date, :end_date, :distance, :commission
 
   FIRST_DISCOUNT = 0.1
   SECOND_DISCOUNT = 0.3
@@ -14,15 +14,24 @@ class Rental
     @start_date = Date.parse params['start_date']
     @end_date = Date.parse params['end_date']
     @distance = params['distance']
+    @commission = Commission.new(self)
+  end
+
+  def days
+    1 + (@end_date - @start_date).to_i
   end
 
   def price
-    rental_days = 1 + (@end_date - @start_date).to_i
+    rental_days = days
 
     price_per_day = @car.price_per_day - (@car.price_per_day * get_discount(rental_days))
 
-    price = rental_days * price_per_day + (@distance * @car.price_per_km)
-    {id: @id, price: price.to_i}
+    amount = rental_days * price_per_day + (@distance * @car.price_per_km)
+    amount.to_i
+  end
+
+  def data
+    {id: @id, price: price, commission: @commission.data}
   end
 
   private

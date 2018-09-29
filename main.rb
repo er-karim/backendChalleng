@@ -1,6 +1,7 @@
 require 'json'
 require './app/model/car.rb'
 require './app/model/rental.rb'
+require './app/model/commission.rb'
 
 def main
   inputs = parse_json_to_hash './app/data/input.json'
@@ -32,7 +33,7 @@ end
 def generate_rental_prices rentals
   rental_prices = {rentals: []}
   rentals.each do |id, rental|
-    rental_prices[:rentals] << rental.price
+    rental_prices[:rentals] << rental.data
   end
 
   json_output = File.open('./app/data/output.json','w')
