@@ -30,8 +30,26 @@ class Rental
     amount.to_i
   end
 
+  def actions
+    [
+        {
+            "who": "driver",
+            "type": "debit",
+            amount: price,
+        },
+        {
+            "who": "owner",
+            "type": "credit",
+            amount: price - @commission.total,
+        }
+    ].concat @commission.data
+  end
+
   def data
-    {id: @id, price: price, commission: @commission.data}
+    {
+        id: @id,
+        actions: actions,
+    }
   end
 
   private
