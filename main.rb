@@ -1,10 +1,12 @@
 require 'json'
+require './app/lib/dataHandler.rb'
 require './app/model/car.rb'
 require './app/model/rental.rb'
 require './app/model/commission.rb'
 
+# starting point
 def main
-  inputs = parse_json_to_hash './app/data/input.json'
+  inputs = DataHandler::json_to_hash
 
   cars = {}
   inputs['cars'].each do |car|
@@ -13,32 +15,10 @@ def main
 
   rentals = {}
   inputs['rentals'].each do |rental|
-    rentals[rental['id']] = Rental.new rental, cars
+    rentals[rental['id']] = Rental.new rental, cars, inputs['options']
   end
 
-  generate_rental_prices rentals
-end
-
-def parse_json_to_hash input_file_path
-  begin
-    file = File.read input_file_path
-    JSON.parse(file)
-  rescue JSON::ParserError
-    print input_file_path+" this file doaesn't contain json data"
-  rescue Errno::ENOENT
-    print "No such file : "+input_file_path
-  end
-end
-
-def generate_rental_prices rentals
-  rental_prices = {rentals: []}
-  rentals.each do |id, rental|
-    rental_prices[:rentals] << rental.data
-  end
-
-  json_output = File.open('./app/data/output.json','w')
-  json_output << JSON.generate(rental_prices)
-  json_output.close
+  DataHandler::generate_rental_prices rentals
 end
 
 main
